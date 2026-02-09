@@ -18,36 +18,32 @@
     justify-content: center;
     position: relative;
     overflow: hidden;
-    background: #0a0a0f;
+    background: #1a1a2e;           /* SFONDO PIÙ CHIARO */
     -webkit-tap-highlight-color: transparent;
   }
 
   html { height: -webkit-fill-available; }
 
-  /* Sfondo elaborato con gradients animati */
-  .background {
-    position: fixed;
-    inset: 0;
-    z-index: 0;
-  }
+  /* Sfondo elaborato - COLORI PIÙ LUMINOSE */
+  .background { position: fixed; inset: 0; z-index: 0; }
 
   .bg-base {
     position: absolute;
     inset: 0;
     background: 
-      radial-gradient(ellipse 80% 60% at 50% 0%, rgba(99,102,241,0.15), transparent 50%),
-      radial-gradient(ellipse 60% 50% at 80% 80%, rgba(139,92,246,0.12), transparent 50%),
-      radial-gradient(ellipse 70% 60% at 10% 90%, rgba(59,130,246,0.1), transparent 50%),
-      linear-gradient(180deg, #0a0a0f 0%, #0d0d15 50%, #0a0a12 100%);
+      radial-gradient(ellipse 80% 60% at 50% 0%, rgba(99,102,241,0.2), transparent 50%),
+      radial-gradient(ellipse 60% 50% at 80% 80%, rgba(139,92,246,0.15), transparent 50%),
+      radial-gradient(ellipse 70% 60% at 10% 90%, rgba(59,130,246,0.12), transparent 50%),
+      linear-gradient(180deg, #1a1a2e 0%, #1f1f3a 50%, #1a1a2e 100%);
   }
 
   .bg-mesh {
     position: absolute;
     inset: 0;
     background: 
-      radial-gradient(circle 400px at 20% 30%, rgba(99,102,241,0.08), transparent),
-      radial-gradient(circle 300px at 80% 70%, rgba(139,92,246,0.06), transparent),
-      radial-gradient(circle 350px at 60% 20%, rgba(79,70,229,0.05), transparent);
+      radial-gradient(circle 400px at 20% 30%, rgba(99,102,241,0.1), transparent),
+      radial-gradient(circle 300px at 80% 70%, rgba(139,92,246,0.08), transparent),
+      radial-gradient(circle 350px at 60% 20%, rgba(79,70,229,0.07), transparent);
     animation: meshMove 15s ease-in-out infinite alternate;
   }
 
@@ -61,32 +57,27 @@
     position: absolute;
     inset: 0;
     background-image: 
-      radial-gradient(2px 2px at 20% 15%, rgba(255,255,255,0.15), transparent),
-      radial-gradient(2px 2px at 40% 35%, rgba(255,255,255,0.1), transparent),
-      radial-gradient(1px 1px at 60% 25%, rgba(255,255,255,0.12), transparent),
-      radial-gradient(2px 2px at 80% 45%, rgba(255,255,255,0.08), transparent),
-      radial-gradient(1px 1px at 15% 55%, rgba(255,255,255,0.1), transparent),
-      radial-gradient(2px 2px at 35% 75%, rgba(255,255,255,0.12), transparent),
-      radial-gradient(1px 1px at 55% 65%, rgba(255,255,255,0.08), transparent),
-      radial-gradient(2px 2px at 75% 85%, rgba(255,255,255,0.1), transparent),
-      radial-gradient(1px 1px at 90% 35%, rgba(255,255,255,0.15), transparent),
-      radial-gradient(1px 1px at 10% 85%, rgba(255,255,255,0.1), transparent);
+      radial-gradient(2px 2px at 20% 15%, rgba(255,255,255,0.2), transparent),
+      radial-gradient(2px 2px at 40% 35%, rgba(255,255,255,0.15), transparent),
+      radial-gradient(1px 1px at 60% 25%, rgba(255,255,255,0.18), transparent),
+      radial-gradient(2px 2px at 80% 45%, rgba(255,255,255,0.12), transparent),
+      radial-gradient(1px 1px at 15% 55%, rgba(255,255,255,0.15), transparent),
+      radial-gradient(2px 2px at 35% 75%, rgba(255,255,255,0.18), transparent),
+      radial-gradient(1px 1px at 55% 65%, rgba(255,255,255,0.12), transparent),
+      radial-gradient(2px 2px at 75% 85%, rgba(255,255,255,0.15), transparent),
+      radial-gradient(1px 1px at 90% 35%, rgba(255,255,255,0.2), transparent),
+      radial-gradient(1px 1px at 10% 85%, rgba(255,255,255,0.15), transparent);
     animation: twinkle 8s ease-in-out infinite;
   }
 
-  @keyframes twinkle {
-    0%, 100% { opacity: 0.6; }
-    50% { opacity: 1; }
-  }
+  @keyframes twinkle { 0%, 100% { opacity: 0.7; } 50% { opacity: 1; } }
 
   .bg-glow {
     position: absolute;
-    top: 50%;
-    left: 50%;
+    top: 50%; left: 50%;
     transform: translate(-50%, -50%);
-    width: 500px;
-    height: 500px;
-    background: radial-gradient(circle, rgba(99,102,241,0.2) 0%, rgba(99,102,241,0.05) 40%, transparent 70%);
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(99,102,241,0.25) 0%, rgba(99,102,241,0.08) 40%, transparent 70%);
     animation: glowPulse 4s ease-in-out infinite;
   }
 
@@ -96,42 +87,35 @@
   }
 
   .bg-lines {
-    position: absolute;
-    inset: 0;
-    opacity: 0.03;
+    position: absolute; inset: 0;
+    opacity: 0.04;
     background-image: 
-      linear-gradient(90deg, transparent 49.5%, rgba(255,255,255,0.5) 50%, transparent 50.5%),
-      linear-gradient(0deg, transparent 49.5%, rgba(255,255,255,0.5) 50%, transparent 50.5%);
+      linear-gradient(90deg, transparent 49.5%, rgba(255,255,255,0.6) 50%, transparent 50.5%),
+      linear-gradient(0deg, transparent 49.5%, rgba(255,255,255,0.6) 50%, transparent 50.5%);
     background-size: 60px 60px;
   }
 
   .content {
-    position: relative;
-    z-index: 1;
-    width: 100%;
-    height: 100vh;
-    height: -webkit-fill-available;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    position: relative; z-index: 1;
+    width: 100%; height: 100vh; height: -webkit-fill-available;
+    display: flex; flex-direction: column; align-items: center;
   }
 
+  /* LOGO ALZATO 30% */
   .logo-container {
     position: absolute;
-    top: 50%;
+    top: 30%;                    /* ← ALZATO (era 50%) */
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 60%;
-    max-width: 350px;
+    width: 60%; max-width: 350px;
     aspect-ratio: 1;
     animation: fadeIn 1s ease-out 0.2s backwards;
   }
 
   .main-logo {
-    width: 100%;
-    height: 100%;
+    width: 100%; height: 100%;
     object-fit: contain;
-    filter: drop-shadow(0 0 40px rgba(99,102,241,0.3));
+    filter: drop-shadow(0 0 40px rgba(99,102,241,0.4));
     animation: logoFloat 6s ease-in-out infinite;
   }
 
@@ -142,8 +126,7 @@
 
   .btn-container {
     position: absolute;
-    bottom: 30%;
-    left: 50%;
+    bottom: 30%; left: 50%;
     transform: translateX(-50%);
     animation: fadeIn 1s ease-out 0.5s backwards;
   }
@@ -151,20 +134,15 @@
   .btn-prosegui {
     padding: 16px 48px;
     font-family: 'DM Sans', sans-serif;
-    font-size: 1rem;
-    font-weight: 500;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
+    font-size: 1rem; font-weight: 500;
+    letter-spacing: 0.1em; text-transform: uppercase;
     color: #e8e8f0;
     background: linear-gradient(135deg, rgba(99,102,241,0.3), rgba(139,92,246,0.2));
     border: 1px solid rgba(99,102,241,0.4);
-    border-radius: 50px;
-    cursor: pointer;
+    border-radius: 50px; cursor: pointer;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    text-decoration: none;
-    display: inline-block;
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    text-decoration: none; display: inline-block;
   }
 
   .btn-prosegui:hover {
@@ -174,38 +152,31 @@
     transform: scale(1.05);
   }
 
-  .btn-prosegui:active {
-    transform: scale(0.98);
-  }
+  .btn-prosegui:active { transform: scale(0.98); }
 
   .credits {
-    position: absolute;
-    bottom: 10%;
-    left: 50%;
+    position: absolute; bottom: 10%; left: 50%;
     transform: translateX(-50%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
+    display: flex; flex-direction: column;
+    align-items: center; gap: 12px;
     animation: fadeIn 1s ease-out 0.8s backwards;
   }
 
+  /* CREDITS PIÙ VISIBILI PER LOGO NERO */
   .credits-text {
     font-size: 0.7rem;
-    color: rgba(255,255,255,0.4);
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
+    color: rgba(255,255,255,0.9);        /* ← PIÙ BIANCO */
+    letter-spacing: 0.15em; text-transform: uppercase;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.7);  /* ← OMBRA */
   }
 
   .momandis-logo {
-    height: 30px;
-    opacity: 0.6;
-    transition: opacity 0.3s;
+    height: 30px; opacity: 0.8;
+    filter: drop-shadow(0 1px 3px rgba(0,0,0,0.8));  /* ← OMBRA PER LOGO NERO */
+    transition: all 0.3s;
   }
 
-  .momandis-logo:hover {
-    opacity: 1;
-  }
+  .momandis-logo:hover { opacity: 1; }
 
   @keyframes fadeIn {
     from { opacity: 0; transform: translateY(20px); }
@@ -214,7 +185,6 @@
 </style>
 </head>
 <body>
-
   <div class="background">
     <div class="bg-base"></div>
     <div class="bg-mesh"></div>
@@ -224,27 +194,18 @@
   </div>
 
   <div class="content">
-    
-    <!-- Logo principale al centro (60% larghezza) -->
     <div class="logo-container">
-      <!-- Sostituisci con il path del tuo logo -->
       <img src="logo-main.png" alt="Logo" class="main-logo">
     </div>
 
-    <!-- Bottone Prosegui - 30% dal basso -->
     <div class="btn-container">
-      <!-- Modifica href con il nome del file webapp -->
       <a href="webapp.html" class="btn-prosegui">Prosegui</a>
     </div>
 
-    <!-- Credits - 10% dal basso -->
     <div class="credits">
       <span class="credits-text">designed and crafted by:</span>
-      <!-- Sostituisci con il path del logo Momandis -->
       <img src="momandis-logo.png" alt="Momandis" class="momandis-logo">
     </div>
-
   </div>
-
 </body>
 </html>
