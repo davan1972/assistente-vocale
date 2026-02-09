@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paco Test</title>
+    <script src="https://unpkg.com/@vapi-ai/web@1.0.1/dist/vapi.browser.js"></script>
+</head>
+<body>
+    <h2 id="status">CARICAMENTO SDK...</h2>
+    <button id="btn" style="width:150px; height:150px; font-size:50px;">📞</button>
+
+    <script>
+        function initVapi() {
+            if (typeof Vapi === 'undefined') {
+                document.getElementById('status').innerText = "ERRORE: SDK NON TROVATO";
+                return;
+            }
+            
+            const vapi = new Vapi('1e9c119b-07e3-4d43-b28d-ad86a610f9bc');
+            const btn = document.getElementById('btn');
+            const st = document.getElementById('status');
+            st.innerText = "PRONTO";
+
+            btn.onclick = () => {
+                st.innerText = "CHIAMATA IN CORSO...";
+                vapi.start('719078b7-486f-44f1-9917-8aaed579819d').catch(e => alert(e));
+            };
+
+            vapi.on('call-start', () => st.innerText = "PACO TI ASCOLTA");
+            vapi.on('call-end', () => st.innerText = "FINITA");
+        }
+
+        // Aspetta che tutto sia pronto
+        window.addEventListener('load', initVapi);
+    </script>
+</body>
+</html>

@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>INTERVISTA CRM</title>
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <script type="module">
+        import Vapi from 'https://esm.sh/@vapi-ai/web';
+        window.Vapi = Vapi;
+    </script>
+
+    <style>
+        :root {
+            --primary: #0EA5E9;
+            --accent: #06B6D4;
+            --highlight: #38BDF8;
+            --dark: #1E293B;
+            --darker: #0F172A;
+            
+            --title-size: clamp(32px, 8vw, 48px);
+            --status-size: clamp(13px, 3.5vw, 17px);
+            --timer-size: clamp(26px, 7vw, 36px);
+            --circle-size: clamp(70px, 18vw, 95px);
+            --label-size: clamp(11px, 2.8vw, 14px);
+            --btn-size: clamp(80px, 20vw, 110px);
+            --grid-gap: clamp(22px, 5vw, 32px);
+            --grid-width: clamp(290px, 85vw, 360px);
+        }
+
+        * { 
+            -webkit-tap-highlight-color: transparent;
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            width: 100%;
+            height: 100%;
+            min-height: 100vh;
+            min-height: -webkit-fill-available;
+            background: linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 25%, #BAE6FD 50%, #E0F2FE 75%, #F0F9FF 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; 
+            color: #0F172A;
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center;
+            overflow: hidden;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(6, 182, 212, 0.08) 0%, transparent 70%);
+            top: -250px;
+            right: -250px;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(14, 165, 233, 0.06) 0%, transparent 70%);
+            bottom: -200px;
+            left: -200px;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            height: 100%;
+            padding: env(safe-area-inset-top, 0) env(safe-area-inset-right, 0) env(safe-area-inset-bottom, 0) env(safe-area-inset-left, 0);
+            position: relative;
+            z-index: 1;
+        }
+
+        .header { 
+            margin-top: clamp(50px, 10vh, 90px); 
+            text-align: center; 
+            padding: 0 20px;
+            flex-shrink: 0;
+        }
+        .title { 
+            font-size: var(--title-size); 
+            font-weight: 900; 
+            background: linear-gradient(135deg, #0369A1 0%, #0EA5E9 50%, #06B6D4 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 2px;
+            filter: drop-shadow(0 2px 8px rgba(6, 182, 212, 0.25));
+        }
+        #status { 
+            font-size: var(--status-size); 
+            color: #475569; 
+            text-transform: uppercase; 
+            margin-top: clamp(10px, 2vh, 14px); 
+            letter-spacing: 3px;
+            font-weight: 600;
+        }
+        #timer { 
+            font-size: var(--timer-size); 
+            font-family: 'SF Mono', 'Courier New', monospace; 
+            margin-top: clamp(10px, 2vh, 14px); 
+            background: linear-gradient(135deg, #0369A1, #0EA5E9);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: none;
+            font-weight: 700;
+        }
+
+        .content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .grid { 
+            display: grid; 
+            grid-template-columns: repeat(3, 1fr); 
+            gap: var(--grid-gap); 
+            width: var(--grid-width); 
+        }
+        .item { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            gap: clamp(8px, 2vw, 12px); 
+            cursor: pointer;
+            touch-action: manipulation;
+        }
+        .circle {
+            width: var(--circle-size); 
+            height: var(--circle-size); 
+            border-radius: 50%;
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(240, 249, 255, 0.95));
+            border: 2px solid rgba(6, 182, 212, 0.3);
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            box-shadow: 
+                0 8px 20px rgba(6, 182, 212, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.8),
+                0 2px 8px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .circle::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: 50%;
+            padding: 2px;
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.4), rgba(14, 165, 233, 0.4));
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .item:active .circle {
+            transform: translateY(2px) scale(0.96);
+            box-shadow: 
+                0 4px 12px rgba(6, 182, 212, 0.2),
+                inset 0 2px 4px rgba(0, 0, 0, 0.1),
+                0 0 20px rgba(6, 182, 212, 0.15);
+        }
+
+        .item:active .circle::before {
+            opacity: 1;
+        }
+
+        .circle.muted {
+            background: linear-gradient(145deg, rgba(254, 226, 226, 0.95), rgba(252, 165, 165, 0.95));
+            border-color: rgba(239, 68, 68, 0.5);
+            box-shadow: 
+                0 8px 20px rgba(239, 68, 68, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.6),
+                0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .circle.muted::before {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.6), rgba(220, 38, 38, 0.6));
+            opacity: 1;
+        }
+
+        .circle svg { 
+            width: clamp(30px, 8vw, 40px); 
+            height: clamp(30px, 8vw, 40px); 
+            fill: #0369A1;
+            filter: drop-shadow(0 2px 4px rgba(6, 182, 212, 0.2));
+            transition: all 0.3s;
+        }
+
+        .circle.muted svg {
+            fill: #DC2626;
+            filter: drop-shadow(0 2px 4px rgba(220, 38, 38, 0.25));
+        }
+
+        .label { 
+            font-size: var(--label-size); 
+            text-transform: uppercase; 
+            color: #334155;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .actions { 
+            margin-bottom: clamp(50px, 10vh, 80px); 
+            height: var(--btn-size);
+            flex-shrink: 0;
+        }
+        .btn {
+            width: var(--btn-size); 
+            height: var(--btn-size); 
+            border-radius: 50%; 
+            border: none;
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            cursor: pointer;
+            touch-action: manipulation;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        #start-btn { 
+            background: linear-gradient(145deg, #10B981, #059669);
+            box-shadow: 
+                0 10px 30px rgba(16, 185, 129, 0.35),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3),
+                0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        #start-btn::before {
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.3), transparent);
+        }
+
+        #start-btn:active {
+            transform: translateY(3px) scale(0.96);
+            box-shadow: 
+                0 5px 15px rgba(16, 185, 129, 0.25),
+                inset 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        #start-btn:active::before {
+            opacity: 1;
+        }
+
+        #end-btn { 
+            background: linear-gradient(145deg, #EF4444, #DC2626);
+            box-shadow: 
+                0 10px 30px rgba(239, 68, 68, 0.35),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3),
+                0 4px 12px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+
+        #end-btn::before {
+            background: radial-gradient(circle, rgba(239, 68, 68, 0.3), transparent);
+        }
+
+        #end-btn svg { transform: rotate(135deg); }
+
+        #end-btn:active {
+            transform: translateY(3px) scale(0.96);
+            box-shadow: 
+                0 5px 15px rgba(239, 68, 68, 0.25),
+                inset 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        #end-btn:active::before {
+            opacity: 1;
+        }
+
+        .btn svg { 
+            width: clamp(38px, 10vw, 54px); 
+            height: clamp(38px, 10vw, 54px); 
+            fill: white;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+        }
+
+        #toast {
+            position: fixed; 
+            top: max(20px, env(safe-area-inset-top, 20px)); 
+            left: 50%;
+            transform: translateX(-50%) translateY(-150%);
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.98), rgba(240, 249, 255, 0.98));
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: clamp(14px, 3vw, 20px) clamp(24px, 5vw, 34px); 
+            border-radius: 50px; 
+            border: 2px solid rgba(6, 182, 212, 0.3);
+            font-size: clamp(14px, 3.5vw, 17px); 
+            text-align: center; 
+            z-index: 1000;
+            transition: transform 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+            max-width: 85vw;
+            box-shadow: 
+                0 10px 40px rgba(6, 182, 212, 0.2),
+                0 4px 12px rgba(0, 0, 0, 0.08),
+                inset 0 1px 0 rgba(255, 255, 255, 0.8);
+            font-weight: 600;
+            color: #0F172A;
+        }
+        #toast.show { transform: translateX(-50%) translateY(0); }
+
+        #device-menu {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(240, 249, 255, 0.98));
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border-top: 2px solid rgba(6, 182, 212, 0.3);
+            padding: clamp(22px, 5vw, 32px);
+            padding-bottom: max(clamp(22px, 5vw, 32px), env(safe-area-inset-bottom, 22px));
+            transform: translateY(100%);
+            transition: transform 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+            z-index: 999;
+            max-height: 65vh;
+            overflow-y: auto;
+            border-radius: 30px 30px 0 0;
+            box-shadow: 
+                0 -10px 50px rgba(6, 182, 212, 0.15),
+                0 -4px 20px rgba(0, 0, 0, 0.08),
+                inset 0 1px 0 rgba(255, 255, 255, 0.8);
+        }
+        #device-menu.show { transform: translateY(0); }
+        
+        .menu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: clamp(20px, 4vw, 28px);
+            padding-bottom: clamp(14px, 3vw, 20px);
+            border-bottom: 2px solid rgba(6, 182, 212, 0.2);
+        }
+        .menu-title {
+            font-size: clamp(22px, 5vw, 28px);
+            font-weight: 800;
+            background: linear-gradient(135deg, #0369A1, #0EA5E9);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .close-menu {
+            background: linear-gradient(145deg, rgba(240, 249, 255, 0.9), rgba(224, 242, 254, 0.9));
+            border: 2px solid rgba(6, 182, 212, 0.3);
+            color: #0369A1;
+            font-size: clamp(34px, 8vw, 42px);
+            cursor: pointer;
+            padding: 0;
+            width: clamp(40px, 9vw, 50px);
+            height: clamp(40px, 9vw, 50px);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+            touch-action: manipulation;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(6, 182, 212, 0.15);
+        }
+        .close-menu:active {
+            background: linear-gradient(145deg, rgba(224, 242, 254, 0.9), rgba(186, 230, 253, 0.9));
+            transform: scale(0.94);
+            box-shadow: 0 2px 6px rgba(6, 182, 212, 0.2);
+        }
+        
+        .device-option {
+            display: flex;
+            align-items: center;
+            padding: clamp(16px, 3.5vw, 22px);
+            margin: clamp(12px, 2.5vw, 16px) 0;
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.8), rgba(240, 249, 255, 0.8));
+            border: 2px solid rgba(6, 182, 212, 0.25);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            touch-action: manipulation;
+            box-shadow: 0 4px 12px rgba(6, 182, 212, 0.1);
+        }
+        .device-option:active {
+            background: linear-gradient(145deg, rgba(224, 242, 254, 0.9), rgba(186, 230, 253, 0.9));
+            transform: scale(0.98);
+            box-shadow: 0 2px 8px rgba(6, 182, 212, 0.15);
+        }
+        .device-option.selected {
+            background: linear-gradient(145deg, rgba(224, 242, 254, 0.9), rgba(186, 230, 253, 0.9));
+            border-color: rgba(6, 182, 212, 0.6);
+            box-shadow: 
+                0 6px 20px rgba(6, 182, 212, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.6);
+        }
+        .device-option svg {
+            width: clamp(28px, 6.5vw, 34px);
+            height: clamp(28px, 6.5vw, 34px);
+            fill: #0369A1;
+            margin-right: clamp(14px, 3vw, 20px);
+            flex-shrink: 0;
+            filter: drop-shadow(0 2px 4px rgba(6, 182, 212, 0.2));
+        }
+        .device-option-text {
+            flex: 1;
+            min-width: 0;
+        }
+        .device-option-name {
+            font-size: clamp(16px, 4vw, 19px);
+            font-weight: 700;
+            line-height: 1.3;
+            color: #0F172A;
+        }
+        .device-option-desc {
+            font-size: clamp(13px, 3vw, 15px);
+            color: #475569;
+            margin-top: clamp(4px, 1vw, 6px);
+            line-height: 1.3;
+        }
+        .checkmark {
+            width: clamp(24px, 5.5vw, 30px);
+            height: clamp(24px, 5.5vw, 30px);
+            border-radius: 50%;
+            border: 2px solid rgba(71, 85, 105, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-left: clamp(10px, 2vw, 14px);
+            transition: all 0.3s;
+        }
+        .device-option.selected .checkmark {
+            background: linear-gradient(135deg, #0EA5E9, #06B6D4);
+            border-color: #0EA5E9;
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.4);
+        }
+        .checkmark svg {
+            width: clamp(16px, 3.5vw, 20px);
+            height: clamp(16px, 3.5vw, 20px);
+            fill: white;
+            display: none;
+            margin: 0;
+        }
+        .device-option.selected .checkmark svg {
+            display: block;
+        }
+
+        #overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 23, 42, 0.4);
+            display: none;
+            z-index: 998;
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+        }
+        #overlay.show { display: block; }
+
+        @media (min-width: 768px) {
+            :root {
+                --grid-width: 420px;
+            }
+            
+            #device-menu {
+                left: 50%;
+                transform: translateX(-50%) translateY(100%);
+                max-width: 520px;
+                border-radius: 30px;
+                bottom: 20px;
+            }
+            
+            #device-menu.show {
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+
+        #device-menu::-webkit-scrollbar {
+            width: 10px;
+        }
+        #device-menu::-webkit-scrollbar-track {
+            background: rgba(224, 242, 254, 0.5);
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+        #device-menu::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, rgba(6, 182, 212, 0.5), rgba(14, 165, 233, 0.5));
+            border-radius: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+        }
+    </style>
+</head>
+<body>
+
+    <div id="toast">Messaggio</div>
+    <div id="overlay"></div>
+
+    <div id="device-menu">
+        <div class="menu-header">
+            <div class="menu-title" id="menu-title">Dispositivi</div>
+            <button class="close-menu" onclick="closeDeviceMenu()">×</button>
+        </div>
+        <div id="device-list"></div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <div class="title">INTERVISTA CRM</div>
+            <div id="status">Inizializzazione...</div>
+            <div id="timer">00:00</div>
+        </div>
+
+        <div class="content">
+            <div class="grid">
+                <div class="item" onclick="openAudioMenu()">
+                    <div class="circle">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+                        </svg>
+                    </div>
+                    <div class="label">Audio</div>
+                </div>
+                <div class="item" onclick="openMicMenu()">
+                    <div class="circle">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/>
+                        </svg>
+                    </div>
+                    <div class="label">Microfono</div>
+                </div>
+                <div class="item" onclick="toggleMute()">
+                    <div class="circle" id="mute-circle">
+                        <svg id="mute-icon" viewBox="0 0 24 24">
+                            <path d="M19 11h-1.7c0 .74-.16 1.43-.43 2.05l1.23 1.23c.56-.98.9-2.09.9-3.28zm-4.02.17c0-.06.02-.11.02-.17V5c0-1.66-1.34-3-3-3S9 3.34 9 5v.18l5.98 5.99zM4.27 3L3 4.27l6.01 6.01V11c0 1.66 1.33 3 2.99 3 .22 0 .44-.03.65-.08l1.66 1.66c-.71.33-1.5.52-2.31.52-2.76 0-5.3-2.1-5.3-5.1H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c.91-.13 1.77-.45 2.54-.9L19.73 21 21 19.73 4.27 3z"/>
+                        </svg>
+                    </div>
+                    <div class="label" id="mute-label">Muto</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="actions">
+            <button id="start-btn" class="btn">
+                <svg viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+            </button>
+            <button id="end-btn" class="btn">
+                <svg viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let vapi;
+        let isMuted = false;
+        let selectedAudioId = null;
+        let selectedMicId = null;
+        let currentMenuType = null;
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.innerText = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 3000);
+        }
+
+        function openAudioMenu() {
+            currentMenuType = 'audio';
+            document.getElementById('menu-title').innerText = 'Output Audio';
+            document.getElementById('device-menu').classList.add('show');
+            document.getElementById('overlay').classList.add('show');
+            loadDevices('audiooutput');
+        }
+
+        function openMicMenu() {
+            currentMenuType = 'mic';
+            document.getElementById('menu-title').innerText = 'Input Microfono';
+            document.getElementById('device-menu').classList.add('show');
+            document.getElementById('overlay').classList.add('show');
+            loadDevices('audioinput');
+        }
+
+        function closeDeviceMenu() {
+            document.getElementById('device-menu').classList.remove('show');
+            document.getElementById('overlay').classList.remove('show');
+        }
+
+        document.getElementById('overlay').onclick = closeDeviceMenu;
+
+        async function loadDevices(kind) {
+            try {
+                await navigator.mediaDevices.getUserMedia({ audio: true });
+                const devices = await navigator.mediaDevices.enumerateDevices();
+                const filtered = devices.filter(d => d.kind === kind);
+                
+                const container = document.getElementById('device-list');
+                container.innerHTML = '';
+
+                if (filtered.length === 0) {
+                    container.innerHTML = '<div style="text-align:center;color:#64748b;padding:30px;font-size:clamp(14px,3.5vw,16px)">Nessun dispositivo rilevato</div>';
+                    return;
+                }
+
+                const selectedId = kind === 'audiooutput' ? selectedAudioId : selectedMicId;
+
+                filtered.forEach(device => {
+                    const option = document.createElement('div');
+                    option.className = 'device-option';
+                    if (selectedId === device.deviceId || (!selectedId && device.deviceId === 'default')) {
+                        option.classList.add('selected');
+                    }
+
+                    const icon = getDeviceIcon(device.label, kind);
+                    const name = device.label || `Dispositivo ${device.deviceId.substring(0, 5)}`;
+                    const desc = getDeviceDescription(device.label, kind);
+
+                    option.innerHTML = `
+                        ${icon}
+                        <div class="device-option-text">
+                            <div class="device-option-name">${name}</div>
+                            <div class="device-option-desc">${desc}</div>
+                        </div>
+                        <div class="checkmark">
+                            <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                        </div>
+                    `;
+
+                    option.onclick = () => selectDevice(device.deviceId, option, kind);
+                    container.appendChild(option);
+                });
+            } catch (err) {
+                console.error('Errore:', err);
+                showToast('Permesso microfono negato');
+            }
+        }
+
+        async function selectDevice(deviceId, element, kind) {
+            if (kind === 'audiooutput') {
+                selectedAudioId = deviceId;
+            } else {
+                selectedMicId = deviceId;
+            }
+            
+            document.querySelectorAll('.device-option').forEach(opt => opt.classList.remove('selected'));
+            element.classList.add('selected');
+
+            showToast('Dispositivo selezionato');
+            setTimeout(closeDeviceMenu, 500);
+        }
+
+        function getDeviceIcon(label, kind) {
+            const lower = label.toLowerCase();
+            
+            if (kind === 'audioinput') {
+                if (lower.includes('bluetooth') || lower.includes('airpods')) {
+                    return '<svg viewBox="0 0 24 24"><path d="M17.71 7.71L12 2h-1v7.59L6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 11 14.41V22h1l5.71-5.71-4.3-4.29 4.3-4.29zM13 5.83l1.88 1.88L13 9.59V5.83zm1.88 10.46L13 18.17v-3.76l1.88 1.88z"/></svg>';
+                }
+                return '<svg viewBox="0 0 24 24"><path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/></svg>';
+            }
+            
+            if (lower.includes('bluetooth') || lower.includes('airpods')) {
+                return '<svg viewBox="0 0 24 24"><path d="M17.71 7.71L12 2h-1v7.59L6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 11 14.41V22h1l5.71-5.71-4.3-4.29 4.3-4.29zM13 5.83l1.88 1.88L13 9.59V5.83zm1.88 10.46L13 18.17v-3.76l1.88 1.88z"/></svg>';
+            }
+            if (lower.includes('speaker') || lower.includes('vivavoce')) {
+                return '<svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>';
+            }
+            if (lower.includes('ear') || lower.includes('receiver')) {
+                return '<svg viewBox="0 0 24 24"><path d="M12 1c-4.97 0-9 4.03-9 9v7c0 1.66 1.34 3 3 3h3v-8H5v-2c0-3.87 3.13-7 7-7s7 3.13 7 7v2h-4v8h3c1.66 0 3-1.34 3-3v-7c0-4.97-4.03-9-9-9z"/></svg>';
+            }
+            return '<svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>';
+        }
+
+        function getDeviceDescription(label, kind) {
+            const lower = label.toLowerCase();
+            if (lower.includes('bluetooth')) return 'Dispositivo wireless';
+            if (lower.includes('speaker')) return 'Altoparlante';
+            if (lower.includes('ear') || lower.includes('receiver')) return 'Auricolare';
+            if (lower.includes('default')) return 'Predefinito';
+            return kind === 'audioinput' ? 'Microfono' : 'Speaker';
+        }
+
+        function toggleMute() {
+            if (!vapi) return;
+            
+            isMuted = !isMuted;
+            vapi.setMuted(isMuted);
+            
+            const circle = document.getElementById('mute-circle');
+            const label = document.getElementById('mute-label');
+            
+            if (isMuted) {
+                circle.classList.add('muted');
+                label.innerText = 'Attivo';
+                showToast('Microfono disattivato');
+            } else {
+                circle.classList.remove('muted');
+                label.innerText = 'Muto';
+                showToast('Microfono attivo');
+            }
+        }
+
+        let startTime, timerInterval;
+
+        function updateTimer() {
+            const now = Date.now();
+            const diff = new Date(now - startTime);
+            const m = String(diff.getUTCMinutes()).padStart(2, '0');
+            const s = String(diff.getUTCSeconds()).padStart(2, '0');
+            document.getElementById('timer').innerText = `${m}:${s}`;
+        }
+
+        const checkVapi = setInterval(() => {
+            if (window.Vapi) {
+                clearInterval(checkVapi);
+                initApp();
+            }
+        }, 100);
+
+        function initApp() {
+            vapi = new window.Vapi('1e9c119b-07e3-4d43-b28d-ad86a610f9bc');
+            const startBtn = document.getElementById('start-btn');
+            const endBtn = document.getElementById('end-btn');
+            const status = document.getElementById('status');
+            const timer = document.getElementById('timer');
+
+            status.innerText = "Pronto";
+
+            startBtn.onclick = () => vapi.start('719078b7-486f-44f1-9917-8aaed579819d');
+            endBtn.onclick = () => vapi.stop();
+
+            vapi.on('call-start', () => {
+                startBtn.style.display = 'none';
+                endBtn.style.display = 'flex';
+                status.innerText = "In collegamento";
+                timer.style.display = 'block';
+                startTime = Date.now();
+                timerInterval = setInterval(updateTimer, 1000);
+            });
+
+            vapi.on('call-end', () => {
+                startBtn.style.display = 'flex';
+                endBtn.style.display = 'none';
+                status.innerText = "Terminata";
+                timer.style.display = 'none';
+                clearInterval(timerInterval);
+                setTimeout(() => status.innerText = "Pronto", 2000);
+            });
+        }
+    </script>
+</body>
+</html>
