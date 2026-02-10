@@ -7,6 +7,10 @@
     
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+    
+    <!-- Previene sospensione su iOS -->
+    <meta name="apple-mobile-web-app-orientations" content="portrait">
 
     <script type="module">
         import Vapi from 'https://esm.sh/@vapi-ai/web';
@@ -600,12 +604,108 @@
         let selectedAudioId = null;
         let selectedMicId = null;
         let currentMenuType = null;
+        let audioContext = null;
+        let wakeLock = null;
 
         function showToast(msg) {
             const t = document.getElementById('toast');
             t.innerText = msg;
             t.classList.add('show');
             setTimeout(() => t.classList.remove('show'), 3000);
+        }
+
+        // ========== FIX iOS: Mantiene audio attivo ==========
+        function keepAudioAlive() {
+            try {
+                // Crea AudioContext se non esiste
+                if (!audioContext) {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                
+                // Riattiva se sospeso
+                if (audioContext.state === 'suspended') {
+                    audioContext.resume();
+                }
+                
+                // Crea oscillatore silenzioso per mantenere attivo l'audio
+                const oscillator = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+                
+                gain.gain.value = 0.001; // Volume impercettibile
+                oscillator.connect(gain);
+                gain.connect(audioContext.destination);
+                oscillator.start();
+                
+                // Ferma dopo 100ms (basta per "svegliare" il sistema)
+                setTimeout(() => {
+                    oscillator.stop();
+                    oscillator.disconnect();
+                }, 100);
+                
+                console.log('Audio keep-alive attivato');
+            } catch (e) {
+                console.warn('Errore keep-alive audio:', e);
+            }
+        }
+
+        // ========== FIX iOS: Wake Lock per prevenire sospensione ==========
+        async function requestWakeLock() {
+            try {
+                if ('wakeLock' in navigator) {
+                    wakeLock = await navigator.wakeLock.request('screen');
+                    console.log('Wake Lock attivato');
+                    
+                    wakeLock.addEventListener('release', () => {
+                        console.log('Wake Lock rilasciato');
+                    });
+                }
+            } catch (e) {
+                console.warn('Wake Lock non disponibile:', e);
+            }
+        }
+
+        function releaseWakeLock() {
+            if (wakeLock) {
+                wakeLock.release();
+                wakeLock = null;
+            }
+        }
+
+        // ========== FIX iOS: Riattiva audio quando la pagina torna visibile ==========
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible' && vapi) {
+                console.log('Pagina tornata visibile, riattivo audio...');
+                keepAudioAlive();
+                
+                // Riattiva AudioContext se sospeso
+                if (audioContext && audioContext.state === 'suspended') {
+                    audioContext.resume();
+                }
+                
+                // Rinnova Wake Lock
+                requestWakeLock();
+            }
+        });
+
+        // ========== FIX iOS: Ping periodico per mantenere connessione ==========
+        let keepAliveInterval = null;
+
+        function startKeepAlive() {
+            // Ping ogni 5 secondi per mantenere attiva la connessione
+            keepAliveInterval = setInterval(() => {
+                if (audioContext && audioContext.state === 'suspended') {
+                    audioContext.resume();
+                }
+                // Micro-ping audio
+                keepAudioAlive();
+            }, 5000);
+        }
+
+        function stopKeepAlive() {
+            if (keepAliveInterval) {
+                clearInterval(keepAliveInterval);
+                keepAliveInterval = null;
+            }
         }
 
         function openAudioMenu() {
@@ -769,7 +869,12 @@
 
             status.innerText = "Pronto";
 
-            startBtn.onclick = () => vapi.start('719078b7-486f-44f1-9917-8aaed579819d');
+            startBtn.onclick = () => {
+                // Attiva audio context al primo tap (richiesto da iOS)
+                keepAudioAlive();
+                vapi.start('719078b7-486f-44f1-9917-8aaed579819d');
+            };
+            
             endBtn.onclick = () => vapi.stop();
 
             vapi.on('call-start', () => {
@@ -779,6 +884,11 @@
                 timer.style.display = 'block';
                 startTime = Date.now();
                 timerInterval = setInterval(updateTimer, 1000);
+                
+                // Attiva tutti i fix iOS
+                keepAudioAlive();
+                requestWakeLock();
+                startKeepAlive();
             });
 
             vapi.on('call-end', () => {
@@ -787,7 +897,18 @@
                 status.innerText = "Terminata";
                 timer.style.display = 'none';
                 clearInterval(timerInterval);
+                
+                // Disattiva fix iOS
+                stopKeepAlive();
+                releaseWakeLock();
+                
                 setTimeout(() => status.innerText = "Pronto", 2000);
+            });
+
+            // Gestione errori per debug
+            vapi.on('error', (error) => {
+                console.error('Errore Vapi:', error);
+                showToast('Errore connessione');
             });
         }
     </script>
